@@ -34,6 +34,8 @@ fn to_number(data: &str) -> Option<(u32, &str)> {
     }
 }
 
+fn next_number(data: &str) -> Option<u32, &str> 
+
 fn to_number<I: Iterator<Item=char> + Clone>(chars: Box<I>) -> Option<(u32, Box<I>)> {
     Some((7, chars.clone()))
     //unimplemented!();
@@ -54,5 +56,43 @@ fn spelled_out(num: i32) -> &'static str {
         7 => "seven",
         8 => "eight",
         9 => "nine",
+    }
+}
+
+struct Numbers<I:Iterator<Item=char> + Clone> {
+    iter: I,
+}
+
+impl Numbers<I:Iterator<Item=char> + Clone> {
+    const NUMBERS: [&str; 9] = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
+    
+    fn new(iter: I) {
+        self.iter = iter;
+    }
+}
+
+impl Iterator for Numbers {
+    type Item = u32;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let mut iter = self.iter.clone();
+        if let Some(c) = iter.next() {
+            if let Some(digit) = c.to_digit(10) {
+                self.iter.skip(1);
+                return Some(digit);
+            }
+        } else {
+            return None;
+        }
+
+        for (idx, num_str) in Numbers::NUMBERS.iter().enumerate() {
+            let iter = self.iter.clone();
+            let substr = iter.take(num_str.len()).collect::<String>(); 
+            if substr == num_str {
+                self.iter.skip(num_str.len());
+                return Some(idx + 1);
+            }
+        }
+        None
     }
 }
