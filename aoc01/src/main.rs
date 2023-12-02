@@ -11,7 +11,14 @@ fn main() -> Result<()> {
 }
 
 fn part1(input: &str) -> Result<()> {
-    writeln!(io::stdout(), "{}", input)?;
+    let mut code = 0;
+    for line in input.lines() {
+        let first = line.chars().filter_map(|c| c.to_digit(10)).next().ok_or("no numbers on line")?;
+        let last = line.chars().rev().filter_map(|c| c.to_digit(10)).next().ok_or("no numbers on line")?;
+        let val = first * 10 + last;
+        code += val;
+    }
+    writeln!(io::stdout(), "{}", code)?;
     Ok(())
 }
 
