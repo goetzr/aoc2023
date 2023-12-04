@@ -36,7 +36,7 @@ mod part2 {
             assert!(numbers.len() > 0);
             let first = *numbers.first().unwrap();
             let last = *numbers.last().unwrap();
-            println!("{}: {}, {}", line, first, last);
+            println!("{}: {:?} => {}, {}", line, numbers, first, last);
             let val = first * 10 + last;
             code += val; 
         }
@@ -54,24 +54,18 @@ mod part2 {
         loop {
             let c = substr.chars().next().unwrap();
             if c.is_ascii_digit() {
-                let digit = c.to_digit(10).unwrap();
-                numbers.push(digit);
-                substr = &substr[1..];
+                let num = c.to_digit(10).unwrap();
+                numbers.push(num);
             } else {
-                let mut found = false;
                 for (idx, num_str) in crate::part2::NUMBERS.iter().enumerate() {
                     if substr.starts_with(num_str) {
-                        found = true;
                         let num = (idx + 1) as u32;
                         numbers.push(num);
-                        substr = &substr[num_str.len()..];
                         break;
                     }
                 }
-                if !found {
-                    substr = &substr[1..];
-                }
             }
+            substr = &substr[1..];
             if substr.len() == 0 {
                 break;
             }
