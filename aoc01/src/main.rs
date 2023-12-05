@@ -36,7 +36,6 @@ mod part2 {
             assert!(numbers.len() > 0);
             let first = *numbers.first().unwrap();
             let last = *numbers.last().unwrap();
-            println!("{}: {:?} => {}, {}", line, numbers, first, last);
             let val = first * 10 + last;
             code += val; 
         }
