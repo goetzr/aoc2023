@@ -5,7 +5,7 @@ use std::io::{self, Write};
 fn main() -> anyhow::Result<()> {
     let input = io::read_to_string(io::stdin())?;
     part1::part1(&input)?;
-    part2(&input)?;
+    part2::part2(&input)?;
     Ok(())
 }
 
@@ -111,7 +111,31 @@ mod part1 {
     }
 }
 
-fn part2(input: &str) -> anyhow::Result<()> {
-    //writeln!(io::stdout(), "{}", input)?;
-    Ok(())
+mod part2 {
+    use super::*;
+
+    pub fn part2(input: &str) -> anyhow::Result<()> {
+        let mut answer = 0;
+        for line in input.lines() {
+            let mut min_red = 0;
+            let mut min_green = 0;
+            let mut min_blue = 0;
+            let game = Game::parse(line)?;
+            for trial in game.trials.iter() {
+                if trial.red > min_red {
+                    min_red = trial.red;
+                }
+                if trial.green > min_green {
+                    min_green = trial.green;
+                }
+                if trial.blue > min_blue {
+                    min_blue = trial.blue;
+                }
+            }
+            let power = min_red * min_green * min_blue;
+            answer += power;
+        }
+        writeln!(io::stdout(), "{}", answer)?;
+        Ok(())
+    }
 }
