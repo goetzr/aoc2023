@@ -10,20 +10,6 @@ fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
-struct Window<'a> {
-    lines: [Option<&'a str>; 3],
-}
-
-impl<'a, I: Iterator<Item = &'a str>> Window<'a, I> {
-    fn new(iter: I) -> Self {
-        // TODO: Grab lines. What if there are less than 2 lines?
-        let line1 = iter.next();
-        Window { iter, }
-    }
-    fn slide_down(&mut self) {
-
-    }
-}
 mod part1 {
     use super::*;
 
@@ -33,34 +19,25 @@ mod part1 {
             writeln!(io::stdout(), "{}", 0);
             return Ok(());
         }
-        ensure!(lines.iter().map(|l| l.len()).collect::<HashSet<_>>().len() == 1, "all lines must be the same length");
+        let line_lengths = HashSet::from_iter(lines.iter().map(|l| l.len()));
+        ensure!(line_lengths.len() == 1, "all lines must be the same length");
+        ensure!(line_lengths.iter().next().unwrap() > 0, "all lines must be non-empty");
 
         let mut answer = 0;
-        if lines.count()
-        let mut window: [Option<&str>; 3] = [None; 3];
-        let line1 = lines.next();
-        if !line1.is_none() {
-            let line2 = lines.next();
-            if !line2.is_none() {
 
-            }
-        }
         writeln!(io::stdout(), "{}", input)?;
         Ok(())
     }
     
-    // TODO: Change this to take two lines. When checking single line, pass same line to both params.
-    fn get_part_numbers(line: &str, line_num: usize) -> anyhow::Result<Vec<u32>> {
-        let mut part_numbers = Vec::new();
-        if line.is_empty() {
-            return Ok(part_numbers);
-        }
-
+    fn get_part_numbers(line: &str, line_num: usize, ctx_lines: &[Option<&str>; 2]) -> anyhow::Result<Vec<u32>> {
         let msg = |msg: &str| {
             format!("line {}: {}", line_num, msg)
         };
 
+        let mut part_numbers = Vec::new();
         let line = line.as_bytes();
+        let ctx_lines = [ctx_lines[0].map(|l| l.as_bytes()), ctx_lines[1].map(|l| l.as_bytes())];
+
         let mut beg = 0;
         let mut end = 1;
         loop {
@@ -70,7 +47,7 @@ mod part1 {
                 }
 
                 // line[beg..end] is a number.
-                let is_part_num = beg > 0 && line[beg] != '.' || end < line.len() && line[end] != '.';
+                let is_part_num = beg > 0 || && line[beg] != b'.' || end < line.len() && line[end] != b'.';
                 if is_part_num {
                     let part_num = &line[beg..end];
                     let part_num = std::str::from_utf8(part_num).unwrap();
