@@ -29,14 +29,14 @@ mod part1 {
         Ok(())
     }
     
-    fn get_part_numbers(line: &str, line_num: usize, ctx_lines: &[Option<&str>; 2]) -> anyhow::Result<Vec<u32>> {
+    fn get_part_numbers_special(line: &str, line_num: usize, ctx_line: &str) -> anyhow::Result<Vec<u32>> {
         let msg = |msg: &str| {
             format!("line {}: {}", line_num, msg)
         };
 
         let mut part_numbers = Vec::new();
         let line = line.as_bytes();
-        let ctx_lines = [ctx_lines[0].map(|l| l.as_bytes()), ctx_lines[1].map(|l| l.as_bytes())];
+        let ctx_line = ctx_line.as_bytes();
 
         let mut beg = 0;
         let mut end = 1;
@@ -47,13 +47,16 @@ mod part1 {
                 }
 
                 // line[beg..end] is a number.
-                let is_part_num = beg > 0 || && line[beg] != b'.' || end < line.len() && line[end] != b'.';
+                let is_part_num = beg > 0 && line[beg] != b'.' || end < line.len() && line[end] != b'.';
                 if is_part_num {
                     let part_num = &line[beg..end];
                     let part_num = std::str::from_utf8(part_num).unwrap();
                     let part_num = part_num.parse::<u32>().context(msg("failed to parse part number"))?;
                     part_numbers.push(part_num);
+                } else {
+                    let is_part_num = beg > 0 && (ctx_line[beg] != b'.' && !ctx_line[beg].is_ascii_digit())
                 }
+
             }
 
             if end == line.len() {
