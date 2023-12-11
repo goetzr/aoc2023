@@ -4,11 +4,71 @@ use std::io::{self, Write};
 
 fn main() -> anyhow::Result<()> {
     let input = io::read_to_string(io::stdin())?;
-    part1::part1(&input)?;
-    part2::part2(&input)?;
+    part1(&input)?;
+    part2(&input)?;
     Ok(())
 }
 
+pub fn part1(input: &str) -> anyhow::Result<()> {
+    let part_numbers = get_all_part_numbers(input)?;
+    let answer: u32 = part_numbers.into_iter().fold(0, |acc, pn| acc + pn.value);
+    writeln!(io::stdout(), "{}", answer)?;
+    Ok(())
+}
+
+pub fn part2(input: &str) -> anyhow::Result<()> {
+    let part_numbers = get_all_part_numbers(input)?;
+    let lines = input.lines().collect::<Vec<_>>();
+    // 123*456...
+    //
+    // 123.......
+    // ...*456...
+    //
+    // 123.......
+    // ...*......
+    // ....456...
+    // 
+    // 123*456...   // NOT a gear
+    // ..789.....
+    
+    let mut gears = Vec::new();
+    if lines.len() == 1 {
+        let all_gears = get_gears_special(lines[0])
+    }
+    for line_idx in 0..lines.len() {
+        let line = lines[line_idx];
+
+        // TODO: Ensure the star is not next to 3 or more part numbers! 
+    }
+    Ok(())
+}
+
+mod part2 {
+    use super::*;
+    
+    struct Gear<'a> {
+        part_numbers: [&'a PartNumber; 2],
+    }
+    
+    impl<'a> Gear<'a> {
+        fn new(pn1: &'a PartNumber, pn2: &'a PartNumber) -> Self {
+            Gear { part_numbers: [pn1, pn2] }
+        }
+    }
+    
+    fn get_gears_one_line_file(line: &str, part_numbers: &'p Vec<PartNumber>) -> Vec<Gear<'p>> {
+        
+    }
+    fn get_gears_special<'p>(line: &str, part_numbers: [&'p Vec<PartNumber>; 2]) -> Vec<Gear<'p>> {
+        let mut gears = Vec::new();
+        for star_idx in line.chars().filter(|&c| c == '*') {
+            
+        }
+        gears
+    }
+    
+    fn get_adjacent_part_numbers(star_idx: usize, part_numb)
+}
 struct PartNumber {
     value: u32,
     range: std::ops::Range<usize>,
@@ -117,7 +177,7 @@ fn parse_num(num: &[u8], line_num: usize, index: usize) -> anyhow::Result<u32> {
     })
 }
 
-fn get_all_part_numbers(input: &str) -> anyhow::Result<Vec<PartNumber>> {
+fn get_all_part_numbers(input: &str) -> anyhow::Result<Vec<Vec<PartNumber>>> {
     let lines = input.lines().collect::<Vec<&str>>();
     if lines.len() == 0 {
         bail!("no lines to process");
@@ -129,43 +189,24 @@ fn get_all_part_numbers(input: &str) -> anyhow::Result<Vec<PartNumber>> {
 
     let mut part_numbers = Vec::new();
     if lines.len() > 1 {
-        let mut first_line_part_nums = get_part_numbers_special(lines[0], 1, lines[1])?;
-        part_numbers.append(&mut first_line_part_nums);
+        let first_line_part_nums = get_part_numbers_special(lines[0], 1, lines[1])?;
+        part_numbers.push(first_line_part_nums);
         if lines.len() > 2 {
             for line_idx in 1..lines.len() - 1 {
                 let line = lines[line_idx];
                 let ctx_lines = [lines[line_idx - 1], lines[line_idx + 1]];
                 let mut line_part_numbers = get_part_numbers(line, line_idx + 1, ctx_lines)?;
-                part_numbers.append(&mut line_part_numbers);
+                part_numbers.push(line_part_numbers);
             }
         }
-        let mut last_line_part_nums = get_part_numbers_special(
+        let last_line_part_nums = get_part_numbers_special(
             lines[lines.len() - 1],
             lines.len(),
             lines[lines.len() - 2],
         )?;
-        part_numbers.append(&mut last_line_part_nums);
+        part_numbers.push(last_line_part_nums);
     }
     
     Ok(part_numbers)
 }
-mod part1 {
-    use super::*;
 
-    pub fn part1(input: &str) -> anyhow::Result<()> {
-        let part_numbers = get_all_part_numbers(input)?;
-        let answer: u32 = part_numbers.into_iter().fold(0, |acc, pn| acc + pn.value);
-        writeln!(io::stdout(), "{}", answer)?;
-        Ok(())
-    }
-
-}
-
-mod part2 {
-    use super::*;
-
-    pub fn part2(input: &str) -> anyhow::Result<()> {
-        let part_numbers = get_all_part_numbers(input)?;
-        Ok(())
-    }
-}
